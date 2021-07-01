@@ -7,9 +7,9 @@
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 
-#define init(type, ...)  __ARGS_(type, __VA_ARGS__)
+#define init(type, ...)  __ARGS_(type, ##__VA_ARGS__)
 
-#define __ARGS_(type, ...) { type _; __TYPE_(_)(__VA_NARG__(__VA_ARGS__), ##__VA_ARGS__); }
+#define __ARGS_(type, ...) ({ type _; __TYPE_(_)(__VA_NARG__(__VA_ARGS__), ##__VA_ARGS__); })
 #define __TYPE_(type) _Generic(type,                                                 \
         _Bool: print_bool,                  unsigned char: print_unsigned_char,          \
             char: print_char,                     signed char: print_signed_char,            \
@@ -59,11 +59,11 @@ _61,_62,_63,N,...) N
 
 #endif
 
-static inline void helper(unsigned int n_args, ...)
+static inline int helper(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i, arg;
   va_list ap;
@@ -74,13 +74,14 @@ static inline void helper(unsigned int n_args, ...)
     printf("  %u\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_bool(unsigned int n_args, ...)
+static inline int print_bool(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   bool arg;
@@ -92,13 +93,14 @@ static inline void print_bool(unsigned int n_args, ...)
     printf("  (bool)%s\n", arg ? "true" : "false");
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_char(unsigned int n_args, ...)
+static inline int print_char(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   char arg;
@@ -110,13 +112,14 @@ static inline void print_char(unsigned int n_args, ...)
     printf("  (char)%c\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_unsigned_char(unsigned int n_args, ...)
+static inline int print_unsigned_char(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   unsigned char arg;
@@ -128,13 +131,14 @@ static inline void print_unsigned_char(unsigned int n_args, ...)
     printf("  (unsigned char)%u\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_signed_char(unsigned int n_args, ...)
+static inline int print_signed_char(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   signed char arg;
@@ -146,13 +150,14 @@ static inline void print_signed_char(unsigned int n_args, ...)
     printf("  (signed char)%u\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_short_int(unsigned int n_args, ...)
+static inline int print_short_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   short int arg;
@@ -164,13 +169,14 @@ static inline void print_short_int(unsigned int n_args, ...)
     printf("  (short int)%i\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_unsigned_short_int(unsigned int n_args, ...)
+static inline int print_unsigned_short_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   unsigned short int arg;
@@ -182,13 +188,14 @@ static inline void print_unsigned_short_int(unsigned int n_args, ...)
     printf("  (unsigned short int)%u\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_int(unsigned int n_args, ...)
+static inline int print_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   int arg;
@@ -200,13 +207,14 @@ static inline void print_int(unsigned int n_args, ...)
     printf("  (int)%i\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_long_int(unsigned int n_args, ...)
+static inline int print_long_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   long int arg;
@@ -218,13 +226,14 @@ static inline void print_long_int(unsigned int n_args, ...)
     printf("  (long int)%li\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_long_long_int(unsigned int n_args, ...)
+static inline int print_long_long_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   long long int arg;
@@ -236,13 +245,14 @@ static inline void print_long_long_int(unsigned int n_args, ...)
     printf("  (long long int)%lli\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_float(unsigned int n_args, ...)
+static inline int print_float(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   float arg;
@@ -254,13 +264,14 @@ static inline void print_float(unsigned int n_args, ...)
     printf("  (float)%f\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_double(unsigned int n_args, ...)
+static inline int print_double(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   double arg;
@@ -272,13 +283,14 @@ static inline void print_double(unsigned int n_args, ...)
     printf("  (double)%f\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_long_double(unsigned int n_args, ...)
+static inline int print_long_double(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   long double arg;
@@ -290,13 +302,14 @@ static inline void print_long_double(unsigned int n_args, ...)
     printf("  (long double)%f\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_unsigned_int(unsigned int n_args, ...)
+static inline int print_unsigned_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   unsigned int arg;
@@ -308,13 +321,14 @@ static inline void print_unsigned_int(unsigned int n_args, ...)
     printf("  (unsigned int)%i\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_unsigned_long_int(unsigned int n_args, ...)
+static inline int print_unsigned_long_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   unsigned long int arg;
@@ -326,13 +340,14 @@ static inline void print_unsigned_long_int(unsigned int n_args, ...)
     printf("  (unsigned long int)%ul\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_unsigned_long_long_int(unsigned int n_args, ...)
+static inline int print_unsigned_long_long_int(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   unsigned long long int arg;
@@ -344,13 +359,14 @@ static inline void print_unsigned_long_long_int(unsigned int n_args, ...)
     printf("  (unsigned long long int)%ul\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_char_pointer(unsigned int n_args, ...)
+static inline int print_char_pointer(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   char *arg;
@@ -362,13 +378,14 @@ static inline void print_char_pointer(unsigned int n_args, ...)
     printf("  (char *)%s\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_int_pointer(unsigned int n_args, ...)
+static inline int print_int_pointer(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   int *arg;
@@ -380,13 +397,14 @@ static inline void print_int_pointer(unsigned int n_args, ...)
     printf("  (int *)%x\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_void_pointer(unsigned int n_args, ...)
+static inline int print_void_pointer(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   unsigned int i;
   void *arg;
@@ -398,15 +416,17 @@ static inline void print_void_pointer(unsigned int n_args, ...)
     printf("  (void *)%x\n", arg);
   }
   va_end(ap);
+  return 0;
 }
 
-static inline void print_default(unsigned int n_args, ...)
+static inline int print_default(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
 
-  if (n_args == 0) return;
+  if (n_args == 0) return 1;
 
   printf("  Unknown type\n");
+  return 0;
 }
 
 #endif
