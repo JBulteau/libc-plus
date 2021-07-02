@@ -4,6 +4,145 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct __list_s {
+  size_t __size;
+  void *__data;
+  void *(*front)(void *);
+  void *(*back)(void *);
+} List;
+
+struct __list_bool_s {
+  size_t __size;
+  bool *__data;
+  bool (*front)(struct __list_bool_s *);
+  bool (*back)(struct __list_bool_s *);
+};
+
+struct __list_char_s {
+  size_t __size;
+  char *__data;
+  char (*front)(struct __list_char_s *);
+  char (*back)(struct __list_char_s *);
+};
+
+struct __list_unsigned_char_s {
+  size_t __size;
+  unsigned char *__data;
+  unsigned char (*front)(struct __list_unsigned_char_s *);
+  unsigned char (*back)(struct __list_unsigned_char_s *);
+};
+
+struct __list_signed_char_s {
+  size_t __size;
+  signed char *__data;
+  signed char (*front)(struct __list_signed_char_s *);
+  signed char (*back)(struct __list_signed_char_s *);
+};
+
+struct __list_short_int_s {
+  size_t __size;
+  short int *__data;
+  short int (*front)(struct __list_short_int_s *);
+  short int (*back)(struct __list_short_int_s *);
+};
+
+struct __list_unsigned_short_int_s {
+  size_t __size;
+  unsigned short int *__data;
+  unsigned short int (*front)(struct __list_unsigned_short_int_s *);
+  unsigned short int (*back)(struct __list_unsigned_short_int_s *);
+};
+
+struct __list_int_s {
+  size_t __size;
+  int *__data;
+  int (*front)(struct __list_int_s *);
+  int (*back)(struct __list_int_s *);
+};
+
+struct __list_long_int_s {
+  size_t __size;
+  long int *__data;
+  long int (*front)(struct __list_long_int_s *);
+  long int (*back)(struct __list_long_int_s *);
+};
+
+struct __list_long_long_int_s {
+  size_t __size;
+  long long int *__data;
+  long long int (*front)(struct __list_long_long_int_s *);
+  long long int (*back)(struct __list_long_long_int_s *);
+};
+
+struct __list_unsigned_int_s {
+  size_t __size;
+  unsigned int *__data;
+  unsigned int (*front)(struct __list_unsigned_int_s *);
+  unsigned int (*back)(struct __list_unsigned_int_s *);
+};
+
+struct __list_unsigned_long_int_s {
+  size_t __size;
+  unsigned long int *__data;
+  unsigned long int (*front)(struct __list_unsigned_long_int_s *);
+  unsigned long int (*back)(struct __list_unsigned_long_int_s *);
+};
+
+struct __list_unsigned_long_long_int_s {
+  size_t __size;
+  unsigned long long int *__data;
+  unsigned long long int (*front)(struct __list_unsigned_long_long_int_s *);
+  unsigned long long int (*back)(struct __list_unsigned_long_long_int_s *);
+};
+
+/*
+** Floating point types are currently not supported because of an undefined behavior
+*/
+
+// struct __list_float_s {
+//   size_t __size;
+//   float *__data;
+//   float (*front)(struct __list_float_s *);
+//   float (*back)(struct __list_float_s *);
+// };
+
+// struct __list_double_s {
+//   size_t __size;
+//   double *__data;
+//   double (*front)(struct __list_double_s *);
+//   double (*back)(struct __list_double_s *);
+// };
+
+// struct __list_long_double_s {
+//   size_t __size;
+//   long double *__data;
+//   long double (*front)(struct __list_long_double_s *);
+//   long double (*back)(struct __list_long_double_s *);
+// };
+
+struct __list_char_pointer_s {
+  size_t __size;
+  char **__data;
+  char *(*front)(struct __list_char_pointer_s *);
+  char *(*back)(struct __list_char_pointer_s *);
+};
+
+struct __list_int_pointer_s {
+  size_t __size;
+  int **__data;
+  int *(*front)(struct __list_int_pointer_s *);
+  int *(*back)(struct __list_int_pointer_s *);
+};
+
+struct __list_void_pointer_s {
+  size_t __size;
+  void **__data;
+  void *(*front)(struct __list_void_pointer_s *);
+  void *(*back)(struct __list_void_pointer_s *);
+};
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 
@@ -11,16 +150,14 @@
 
 #define __ARGS_(type, ...) ({ type _; __TYPE_(_)(__VA_NARG__(__VA_ARGS__), ##__VA_ARGS__); })
 #define __TYPE_(type) _Generic(type,                                                 \
-        _Bool: print_bool,                  unsigned char: print_unsigned_char,          \
-            char: print_char,                     signed char: print_signed_char,            \
-    short int: print_short_int,         unsigned short int: print_unsigned_short_int,     \
-            int: print_int,                     unsigned int: print_unsigned_int,           \
-        long int: print_long_int,           unsigned long int: print_unsigned_long_int,      \
-long long int: print_long_long_int, unsigned long long int: print_unsigned_long_long_int, \
-        float: print_float,                         double: print_double,                 \
-    long double: print_long_double,                   char *: print_char_pointer,        \
-        void *: print_void_pointer,                int *: print_int_pointer,         \
-        default: print_default)
+        _Bool: init_bool,                  unsigned char: init_unsigned_char,          \
+            char: init_char,                     signed char: init_signed_char,            \
+    short int: init_short_int,         unsigned short int: init_unsigned_short_int,     \
+            int: init_int,                     unsigned int: init_unsigned_int,           \
+        long int: init_long_int,           unsigned long int: init_unsigned_long_int,      \
+long long int: init_long_long_int, unsigned long long int: init_unsigned_long_long_int, \
+        char *: init_char_pointer,              void *: init_void_pointer,              \
+        int *: init_int_pointer,                  default: print_default)
 
 #define __VA_NARG__(...) \
 (__VA_NARG_(_0, ##__VA_ARGS__, __RSEQ_N()) - 1)
@@ -77,346 +214,638 @@ static inline int helper(unsigned int n_args, ...)
   return 0;
 }
 
-static inline int print_bool(unsigned int n_args, ...)
+static inline bool front_bool(struct __list_bool_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  bool arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (bool)%s\n", arg ? "true" : "false");
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[0];
 }
 
-static inline int print_char(unsigned int n_args, ...)
+static inline bool back_bool(struct __list_bool_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  char arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (char)%c\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[this->__size - 1];
 }
 
-static inline int print_unsigned_char(unsigned int n_args, ...)
+static inline List *init_bool(unsigned int n_args, ...)
 {
-  printf("%u argument(s):\n", n_args);
+  struct __list_bool_s *list = malloc(sizeof(struct __list_bool_s));
 
-  if (n_args == 0) return 1;
+  if (!list) return NULL;
 
-  unsigned int i;
-  unsigned char arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (unsigned char)%u\n", arg);
+  if (n_args) {
+    list->__data = malloc(sizeof(bool) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((bool *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
   }
-  va_end(ap);
-  return 0;
+  list->__size = n_args;
+  list->front = &front_bool;
+  list->back = &back_bool;
+  return (List *)list;
 }
 
-static inline int print_signed_char(unsigned int n_args, ...)
+static inline char front_char(struct __list_char_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  signed char arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (signed char)%u\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[0];
 }
 
-static inline int print_short_int(unsigned int n_args, ...)
+static inline char back_char(struct __list_char_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  short int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (short int)%i\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[this->__size - 1];
 }
 
-static inline int print_unsigned_short_int(unsigned int n_args, ...)
+static inline List *init_char(unsigned int n_args, ...)
 {
-  printf("%u argument(s):\n", n_args);
+  struct __list_char_s *list = malloc(sizeof(struct __list_char_s));
 
-  if (n_args == 0) return 1;
+  if (!list) return NULL;
 
-  unsigned int i;
-  unsigned short int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (unsigned short int)%u\n", arg);
+  if (n_args) {
+    list->__data = malloc(sizeof(char) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((char *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
   }
-  va_end(ap);
-  return 0;
+  list->__size = n_args;
+  list->front = &front_char;
+  list->back = &back_char;
+  return (List *)list;
 }
 
-static inline int print_int(unsigned int n_args, ...)
+static inline unsigned char front_unsigned_char(struct __list_unsigned_char_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int);
-    printf("  (int)%i\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[0];
 }
 
-static inline int print_long_int(unsigned int n_args, ...)
+static inline unsigned char back_unsigned_char(struct __list_unsigned_char_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  long int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, long int);
-    printf("  (long int)%li\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[this->__size - 1];
 }
 
-static inline int print_long_long_int(unsigned int n_args, ...)
+static inline List *init_unsigned_char(unsigned int n_args, ...)
 {
-  printf("%u argument(s):\n", n_args);
+  struct __list_unsigned_char_s *list = malloc(sizeof(struct __list_unsigned_char_s));
 
-  if (n_args == 0) return 1;
+  if (!list) return NULL;
 
-  unsigned int i;
-  long long int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, long long int);
-    printf("  (long long int)%lli\n", arg);
+  if (n_args) {
+    list->__data = malloc(sizeof(unsigned char) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((unsigned char *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
   }
-  va_end(ap);
-  return 0;
+  list->__size = n_args;
+  list->front = &front_unsigned_char;
+  list->back = &back_unsigned_char;
+  return (List *)list;
 }
 
-static inline int print_float(unsigned int n_args, ...)
+static inline signed char front_signed_char(struct __list_signed_char_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  float arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, double);
-    printf("  (float)%f\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[0];
 }
 
-static inline int print_double(unsigned int n_args, ...)
+static inline signed char back_signed_char(struct __list_signed_char_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  double arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, double);
-    printf("  (double)%f\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[this->__size - 1];
 }
 
-static inline int print_long_double(unsigned int n_args, ...)
+static inline List *init_signed_char(signed int n_args, ...)
 {
-  printf("%u argument(s):\n", n_args);
+  struct __list_signed_char_s *list = malloc(sizeof(struct __list_signed_char_s));
 
-  if (n_args == 0) return 1;
+  if (!list) return NULL;
 
-  unsigned int i;
-  long double arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, long double);
-    printf("  (long double)%f\n", arg);
+  if (n_args) {
+    list->__data = malloc(sizeof(signed char) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((signed char *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
   }
-  va_end(ap);
-  return 0;
+  list->__size = n_args;
+  list->front = &front_signed_char;
+  list->back = &back_signed_char;
+  return (List *)list;
 }
 
-static inline int print_unsigned_int(unsigned int n_args, ...)
+static inline short int front_short_int(struct __list_short_int_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  unsigned int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, unsigned);
-    printf("  (unsigned int)%i\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[0];
 }
 
-static inline int print_unsigned_long_int(unsigned int n_args, ...)
+static inline short int back_short_int(struct __list_short_int_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  unsigned long int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, unsigned long int);
-    printf("  (unsigned long int)%ul\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[this->__size - 1];
 }
 
-static inline int print_unsigned_long_long_int(unsigned int n_args, ...)
+static inline List *init_short_int(unsigned int n_args, ...)
 {
-  printf("%u argument(s):\n", n_args);
+  struct __list_short_int_s *list = malloc(sizeof(struct __list_short_int_s));
 
-  if (n_args == 0) return 1;
+  if (!list) return NULL;
 
-  unsigned int i;
-  unsigned long long int arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, unsigned long long int);
-    printf("  (unsigned long long int)%ul\n", arg);
+  if (n_args) {
+    list->__data = malloc(sizeof(short int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((short int *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
   }
-  va_end(ap);
-  return 0;
+  list->__size = n_args;
+  list->front = &front_short_int;
+  list->back = &back_short_int;
+  return (List *)list;
 }
 
-static inline int print_char_pointer(unsigned int n_args, ...)
+static inline unsigned short int front_unsigned_short_int(struct __list_unsigned_short_int_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  char *arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, char *);
-    printf("  (char *)%s\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[0];
 }
 
-static inline int print_int_pointer(unsigned int n_args, ...)
+static inline unsigned short int back_unsigned_short_int(struct __list_unsigned_short_int_s *this)
 {
-  printf("%u argument(s):\n", n_args);
-
-  if (n_args == 0) return 1;
-
-  unsigned int i;
-  int *arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, int *);
-    printf("  (int *)%x\n", arg);
-  }
-  va_end(ap);
-  return 0;
+  return this->__data[this->__size - 1];
 }
 
-static inline int print_void_pointer(unsigned int n_args, ...)
+static inline List *init_unsigned_short_int(unsigned int n_args, ...)
 {
-  printf("%u argument(s):\n", n_args);
+  struct __list_unsigned_short_int_s *list = malloc(sizeof(struct __list_unsigned_short_int_s));
 
-  if (n_args == 0) return 1;
+  if (!list) return NULL;
 
-  unsigned int i;
-  void *arg;
-  va_list ap;
-
-  va_start(ap, n_args);
-  for (i = 0; i < n_args; i++) {
-    arg = va_arg(ap, void *);
-    printf("  (void *)%x\n", arg);
+  if (n_args) {
+    list->__data = malloc(sizeof(unsigned short int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((unsigned short int *) list->__data)[i] = va_arg(ap, unsigned int);
+    }
+    va_end(ap);
   }
-  va_end(ap);
-  return 0;
+  list->__size = n_args;
+  list->front = &front_unsigned_short_int;
+  list->back = &back_unsigned_short_int;
+  return (List *)list;
+}
+
+static inline int front_int(struct __list_int_s *this)
+{
+  return this->__data[0];
+}
+
+static inline int back_int(struct __list_int_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_int(unsigned int n_args, ...)
+{
+  struct __list_int_s *list = malloc(sizeof(struct __list_int_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((int *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_int;
+  list->back = &back_int;
+  return (List *)list;
+}
+
+static inline long int front_long_int(struct __list_long_int_s *this)
+{
+  return this->__data[0];
+}
+
+static inline long int back_long_int(struct __list_long_int_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_long_int(unsigned int n_args, ...)
+{
+  struct __list_long_int_s *list = malloc(sizeof(struct __list_long_int_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(long int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((long int *) list->__data)[i] = va_arg(ap, long int);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_long_int;
+  list->back = &back_long_int;
+  return (List *)list;
+}
+
+static inline long long int front_long_long_int(struct __list_long_long_int_s *this)
+{
+  return this->__data[0];
+}
+
+static inline long long int back_long_long_int(struct __list_long_long_int_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_long_long_int(unsigned int n_args, ...)
+{
+  struct __list_long_long_int_s *list = malloc(sizeof(struct __list_long_long_int_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(long long int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((long long int *) list->__data)[i] = va_arg(ap, long long int);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_long_long_int;
+  list->back = &back_long_long_int;
+  return (List *)list;
+}
+
+static inline unsigned int front_unsigned_int(struct __list_unsigned_int_s *this)
+{
+  return this->__data[0];
+}
+
+static inline unsigned int back_unsigned_int(struct __list_unsigned_int_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_unsigned_int(unsigned int n_args, ...)
+{
+  struct __list_unsigned_int_s *list = malloc(sizeof(struct __list_unsigned_int_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(unsigned int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((unsigned int *) list->__data)[i] = va_arg(ap, int);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_unsigned_int;
+  list->back = &back_unsigned_int;
+  return (List *)list;
+}
+
+static inline unsigned long int front_unsigned_long_int(struct __list_unsigned_long_int_s *this)
+{
+  return this->__data[0];
+}
+
+static inline unsigned long int back_unsigned_long_int(struct __list_unsigned_long_int_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_unsigned_long_int(unsigned int n_args, ...)
+{
+  struct __list_unsigned_long_int_s *list = malloc(sizeof(struct __list_unsigned_long_int_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(unsigned long int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((unsigned long int *) list->__data)[i] = va_arg(ap, long int);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_unsigned_long_int;
+  list->back = &back_unsigned_long_int;
+  return (List *)list;
+}
+
+static inline unsigned long long int front_unsigned_long_long_int(struct __list_unsigned_long_long_int_s *this)
+{
+  return this->__data[0];
+}
+
+static inline unsigned long long int back_unsigned_long_long_int(struct __list_unsigned_long_long_int_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_unsigned_long_long_int(unsigned int n_args, ...)
+{
+  struct __list_unsigned_long_long_int_s *list = malloc(sizeof(struct __list_unsigned_long_long_int_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(unsigned long long int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((unsigned long long int *) list->__data)[i] = va_arg(ap, long long int);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_unsigned_long_long_int;
+  list->back = &back_unsigned_long_long_int;
+  return (List *)list;
+}
+
+/*
+** Floating point types are currently not supported because of an undefined behavior
+*/
+
+// static inline float front_float(struct __list_float_s *this)
+// {
+//   return ((float *)this->__data)[0];
+// }
+
+// static inline float back_float(struct __list_float_s *this)
+// {
+//   return ((float *)this->__data)[this->__size - 1];
+// }
+
+// static inline List *init_float(unsigned int n_args, ...)
+// {
+//   struct __list_float_s *list = malloc(sizeof(struct __list_float_s));
+
+//   if (!list) return NULL;
+
+//   if (n_args) {
+//     list->__data = malloc(sizeof(float) * n_args);
+//     if (!list->__data) {
+//       free(list);
+//       return NULL;
+//     }
+//     va_list ap;
+//     va_start(ap, n_args);
+//     for (unsigned int i = 0; i < n_args; i++) {
+//       ((float *) list->__data)[i] = va_arg(ap, double);
+//     }
+//     va_end(ap);
+//   }
+//   list->__size = n_args;
+//   list->front = &front_float;
+//   list->back = &back_float;
+//   return (List *)list;
+// }
+
+// static inline double front_double(struct __list_double_s *this)
+// {
+//   return ((double *)this->__data)[0];
+// }
+
+// static inline double back_double(struct __list_double_s *this)
+// {
+//   return ((double *)this->__data)[this->__size - 1];
+// }
+
+// static inline List *init_double(unsigned int n_args, ...)
+// {
+//   struct __list_double_s *list = malloc(sizeof(struct __list_double_s));
+
+//   if (!list) return NULL;
+
+//   if (n_args) {
+//     list->__data = malloc(sizeof(double) * n_args);
+//     if (!list->__data) {
+//       free(list);
+//       return NULL;
+//     }
+//     va_list ap;
+//     va_start(ap, n_args);
+//     for (unsigned int i = 0; i < n_args; i++) {
+//       ((double *) list->__data)[i] = va_arg(ap, double);
+//     }
+//     va_end(ap);
+//   }
+//   list->__size = n_args;
+//   list->front = &front_double;
+//   list->back = &back_double;
+//   return (List *)list;
+// }
+
+// static inline long double front_long_double(struct __list_long_double_s *this)
+// {
+//   return ((long double *)this->__data)[0];
+// }
+
+// static inline long double back_long_double(struct __list_long_double_s *this)
+// {
+//   return ((long double *)this->__data)[this->__size - 1];
+// }
+
+// static inline List *init_long_double(unsigned int n_args, ...)
+// {
+//   struct __list_long_double_s *list = malloc(sizeof(struct __list_long_double_s));
+
+//   if (!list) return NULL;
+
+//   if (n_args) {
+//     list->__data = malloc(sizeof(long double) * n_args);
+//     if (!list->__data) {
+//       free(list);
+//       return NULL;
+//     }
+//     va_list ap;
+//     va_start(ap, n_args);
+//     for (unsigned int i = 0; i < n_args; i++) {
+//       ((long double *) list->__data)[i] = va_arg(ap, long double);
+//     }
+//     va_end(ap);
+//   }
+//   list->__size = n_args;
+//   list->front = &front_long_double;
+//   list->back = &back_long_double;
+//   return (List *)list;
+// }
+
+static inline char *front_char_pointer(struct __list_char_pointer_s *this)
+{
+  return this->__data[0];
+}
+
+static inline char *back_char_pointer(struct __list_char_pointer_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_char_pointer(unsigned int n_args, ...)
+{
+  struct __list_char_pointer_s *list = malloc(sizeof(struct __list_char_pointer_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(char) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((char **) list->__data)[i] = va_arg(ap, char *);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_char_pointer;
+  list->back = &back_char_pointer;
+  return (List *)list;
+}
+
+static inline int *front_int_pointer(struct __list_int_pointer_s *this)
+{
+  return this->__data[0];
+}
+
+static inline int *back_int_pointer(struct __list_int_pointer_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_int_pointer(unsigned int n_args, ...)
+{
+  struct __list_int_pointer_s *list = malloc(sizeof(struct __list_int_pointer_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(int) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((int **) list->__data)[i] = va_arg(ap, int *);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_int_pointer;
+  list->back = &back_int_pointer;
+  return (List *)list;
+}
+
+static inline void *front_void_pointer(struct __list_void_pointer_s *this)
+{
+  return this->__data[0];
+}
+
+static inline void *back_void_pointer(struct __list_void_pointer_s *this)
+{
+  return this->__data[this->__size - 1];
+}
+
+static inline List *init_void_pointer(unsigned int n_args, ...)
+{
+  struct __list_void_pointer_s *list = malloc(sizeof(struct __list_void_pointer_s));
+
+  if (!list) return NULL;
+
+  if (n_args) {
+    list->__data = malloc(sizeof(void) * n_args);
+    if (!list->__data) {
+      free(list);
+      return NULL;
+    }
+    va_list ap;
+    va_start(ap, n_args);
+    for (unsigned int i = 0; i < n_args; i++) {
+      ((void **) list->__data)[i] = va_arg(ap, void *);
+    }
+    va_end(ap);
+  }
+  list->__size = n_args;
+  list->front = &front_void_pointer;
+  list->back = &back_void_pointer;
+  return (List *)list;
 }
 
 static inline int print_default(unsigned int n_args, ...)
