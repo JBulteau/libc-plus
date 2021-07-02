@@ -781,7 +781,7 @@ static inline List *create_list_char_pointer(unsigned int n_args, ...)
   if (!list) return NULL;
 
   if (n_args) {
-    list->__data = malloc(sizeof(char) * n_args);
+    list->__data = malloc(sizeof(char *) * n_args);
     if (!list->__data) {
       free(list);
       return NULL;
@@ -817,7 +817,7 @@ static inline List *create_list_int_pointer(unsigned int n_args, ...)
   if (!list) return NULL;
 
   if (n_args) {
-    list->__data = malloc(sizeof(int) * n_args);
+    list->__data = malloc(sizeof(int *) * n_args);
     if (!list->__data) {
       free(list);
       return NULL;
@@ -853,7 +853,7 @@ static inline List *create_list_void_pointer(unsigned int n_args, ...)
   if (!list) return NULL;
 
   if (n_args) {
-    list->__data = malloc(sizeof(void) * n_args);
+    list->__data = malloc(sizeof(void *) * n_args);
     if (!list->__data) {
       free(list);
       return NULL;

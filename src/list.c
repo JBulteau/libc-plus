@@ -17,7 +17,7 @@ int main() {
     printf("(short int)\nFront: %hi\nBack: %hi\n\n", list5->front(list5), list5->back(list5));
     list5->delete(list5);
     List *list6 = create_list(unsigned short int, 12, 20930);
-    printf("(unsigned short int)\nFront: %hi\nBack: %hi\n\n", list5->front(list6), list5->back(list6));
+    printf("(unsigned short int)\nFront: %hi\nBack: %hi\n\n", list6->front(list6), list6->back(list6));
     list6->delete(list6);
     List *list7 = create_list(int, 1, 2);
     printf("(int)\nFront: %i\nBack: %i\n\n", list7->front(list7), list7->back(list7));
