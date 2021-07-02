@@ -146,18 +146,18 @@ struct __list_void_pointer_s {
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 
-#define init(type, ...)  __ARGS_(type, ##__VA_ARGS__)
+#define create_list(type, ...)  __ARGS_(type, ##__VA_ARGS__)
 
 #define __ARGS_(type, ...) ({ type _; __TYPE_(_)(__VA_NARG__(__VA_ARGS__), ##__VA_ARGS__); })
 #define __TYPE_(type) _Generic(type,                                                 \
-        _Bool: init_bool,                  unsigned char: init_unsigned_char,          \
-            char: init_char,                     signed char: init_signed_char,            \
-    short int: init_short_int,         unsigned short int: init_unsigned_short_int,     \
-            int: init_int,                     unsigned int: init_unsigned_int,           \
-        long int: init_long_int,           unsigned long int: init_unsigned_long_int,      \
-long long int: init_long_long_int, unsigned long long int: init_unsigned_long_long_int, \
-        char *: init_char_pointer,              void *: init_void_pointer,              \
-        int *: init_int_pointer,                  default: print_default)
+        _Bool: create_list_bool,                  unsigned char: create_list_unsigned_char,          \
+            char: create_list_char,                     signed char: create_list_signed_char,            \
+    short int: create_list_short_int,         unsigned short int: create_list_unsigned_short_int,     \
+            int: create_list_int,                     unsigned int: create_list_unsigned_int,           \
+        long int: create_list_long_int,           unsigned long int: create_list_unsigned_long_int,      \
+long long int: create_list_long_long_int, unsigned long long int: create_list_unsigned_long_long_int, \
+        char *: create_list_char_pointer,              void *: create_list_void_pointer,              \
+        int *: create_list_int_pointer,                  default: print_default)
 
 #define __VA_NARG__(...) \
 (__VA_NARG_(_0, ##__VA_ARGS__, __RSEQ_N()) - 1)
@@ -224,7 +224,7 @@ static inline bool back_bool(struct __list_bool_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_bool(unsigned int n_args, ...)
+static inline List *create_list_bool(unsigned int n_args, ...)
 {
   struct __list_bool_s *list = malloc(sizeof(struct __list_bool_s));
 
@@ -259,7 +259,7 @@ static inline char back_char(struct __list_char_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_char(unsigned int n_args, ...)
+static inline List *create_list_char(unsigned int n_args, ...)
 {
   struct __list_char_s *list = malloc(sizeof(struct __list_char_s));
 
@@ -294,7 +294,7 @@ static inline unsigned char back_unsigned_char(struct __list_unsigned_char_s *th
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_unsigned_char(unsigned int n_args, ...)
+static inline List *create_list_unsigned_char(unsigned int n_args, ...)
 {
   struct __list_unsigned_char_s *list = malloc(sizeof(struct __list_unsigned_char_s));
 
@@ -329,7 +329,7 @@ static inline signed char back_signed_char(struct __list_signed_char_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_signed_char(signed int n_args, ...)
+static inline List *create_list_signed_char(signed int n_args, ...)
 {
   struct __list_signed_char_s *list = malloc(sizeof(struct __list_signed_char_s));
 
@@ -364,7 +364,7 @@ static inline short int back_short_int(struct __list_short_int_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_short_int(unsigned int n_args, ...)
+static inline List *create_list_short_int(unsigned int n_args, ...)
 {
   struct __list_short_int_s *list = malloc(sizeof(struct __list_short_int_s));
 
@@ -399,7 +399,7 @@ static inline unsigned short int back_unsigned_short_int(struct __list_unsigned_
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_unsigned_short_int(unsigned int n_args, ...)
+static inline List *create_list_unsigned_short_int(unsigned int n_args, ...)
 {
   struct __list_unsigned_short_int_s *list = malloc(sizeof(struct __list_unsigned_short_int_s));
 
@@ -434,7 +434,7 @@ static inline int back_int(struct __list_int_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_int(unsigned int n_args, ...)
+static inline List *create_list_int(unsigned int n_args, ...)
 {
   struct __list_int_s *list = malloc(sizeof(struct __list_int_s));
 
@@ -469,7 +469,7 @@ static inline long int back_long_int(struct __list_long_int_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_long_int(unsigned int n_args, ...)
+static inline List *create_list_long_int(unsigned int n_args, ...)
 {
   struct __list_long_int_s *list = malloc(sizeof(struct __list_long_int_s));
 
@@ -504,7 +504,7 @@ static inline long long int back_long_long_int(struct __list_long_long_int_s *th
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_long_long_int(unsigned int n_args, ...)
+static inline List *create_list_long_long_int(unsigned int n_args, ...)
 {
   struct __list_long_long_int_s *list = malloc(sizeof(struct __list_long_long_int_s));
 
@@ -539,7 +539,7 @@ static inline unsigned int back_unsigned_int(struct __list_unsigned_int_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_unsigned_int(unsigned int n_args, ...)
+static inline List *create_list_unsigned_int(unsigned int n_args, ...)
 {
   struct __list_unsigned_int_s *list = malloc(sizeof(struct __list_unsigned_int_s));
 
@@ -574,7 +574,7 @@ static inline unsigned long int back_unsigned_long_int(struct __list_unsigned_lo
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_unsigned_long_int(unsigned int n_args, ...)
+static inline List *create_list_unsigned_long_int(unsigned int n_args, ...)
 {
   struct __list_unsigned_long_int_s *list = malloc(sizeof(struct __list_unsigned_long_int_s));
 
@@ -609,7 +609,7 @@ static inline unsigned long long int back_unsigned_long_long_int(struct __list_u
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_unsigned_long_long_int(unsigned int n_args, ...)
+static inline List *create_list_unsigned_long_long_int(unsigned int n_args, ...)
 {
   struct __list_unsigned_long_long_int_s *list = malloc(sizeof(struct __list_unsigned_long_long_int_s));
 
@@ -648,7 +648,7 @@ static inline List *init_unsigned_long_long_int(unsigned int n_args, ...)
 //   return ((float *)this->__data)[this->__size - 1];
 // }
 
-// static inline List *init_float(unsigned int n_args, ...)
+// static inline List *create_list_float(unsigned int n_args, ...)
 // {
 //   struct __list_float_s *list = malloc(sizeof(struct __list_float_s));
 
@@ -683,7 +683,7 @@ static inline List *init_unsigned_long_long_int(unsigned int n_args, ...)
 //   return ((double *)this->__data)[this->__size - 1];
 // }
 
-// static inline List *init_double(unsigned int n_args, ...)
+// static inline List *create_list_double(unsigned int n_args, ...)
 // {
 //   struct __list_double_s *list = malloc(sizeof(struct __list_double_s));
 
@@ -718,7 +718,7 @@ static inline List *init_unsigned_long_long_int(unsigned int n_args, ...)
 //   return ((long double *)this->__data)[this->__size - 1];
 // }
 
-// static inline List *init_long_double(unsigned int n_args, ...)
+// static inline List *create_list_long_double(unsigned int n_args, ...)
 // {
 //   struct __list_long_double_s *list = malloc(sizeof(struct __list_long_double_s));
 
@@ -753,7 +753,7 @@ static inline char *back_char_pointer(struct __list_char_pointer_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_char_pointer(unsigned int n_args, ...)
+static inline List *create_list_char_pointer(unsigned int n_args, ...)
 {
   struct __list_char_pointer_s *list = malloc(sizeof(struct __list_char_pointer_s));
 
@@ -788,7 +788,7 @@ static inline int *back_int_pointer(struct __list_int_pointer_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_int_pointer(unsigned int n_args, ...)
+static inline List *create_list_int_pointer(unsigned int n_args, ...)
 {
   struct __list_int_pointer_s *list = malloc(sizeof(struct __list_int_pointer_s));
 
@@ -823,7 +823,7 @@ static inline void *back_void_pointer(struct __list_void_pointer_s *this)
   return this->__data[this->__size - 1];
 }
 
-static inline List *init_void_pointer(unsigned int n_args, ...)
+static inline List *create_list_void_pointer(unsigned int n_args, ...)
 {
   struct __list_void_pointer_s *list = malloc(sizeof(struct __list_void_pointer_s));
 
