@@ -7,12 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct __list_s {
+typedef struct __list_s List;
+
+struct __list_s {
   size_t __size;
   void *__data;
   void *(*front)(void *);
   void *(*back)(void *);
-} List;
+  void (*delete)(List *);
+};
 
 struct __list_bool_s {
   size_t __size;
@@ -196,6 +199,12 @@ _61,_62,_63,N,...) N
 
 #endif
 
+static inline void delete(List *this)
+{
+  free(this->__data);
+  free(this);
+}
+
 static inline int helper(unsigned int n_args, ...)
 {
   printf("%u argument(s):\n", n_args);
@@ -226,7 +235,7 @@ static inline bool back_bool(struct __list_bool_s *this)
 
 static inline List *create_list_bool(unsigned int n_args, ...)
 {
-  struct __list_bool_s *list = malloc(sizeof(struct __list_bool_s));
+  struct __list_bool_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -246,6 +255,7 @@ static inline List *create_list_bool(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_bool;
   list->back = &back_bool;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -261,7 +271,7 @@ static inline char back_char(struct __list_char_s *this)
 
 static inline List *create_list_char(unsigned int n_args, ...)
 {
-  struct __list_char_s *list = malloc(sizeof(struct __list_char_s));
+  struct __list_char_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -281,6 +291,7 @@ static inline List *create_list_char(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_char;
   list->back = &back_char;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -296,7 +307,7 @@ static inline unsigned char back_unsigned_char(struct __list_unsigned_char_s *th
 
 static inline List *create_list_unsigned_char(unsigned int n_args, ...)
 {
-  struct __list_unsigned_char_s *list = malloc(sizeof(struct __list_unsigned_char_s));
+  struct __list_unsigned_char_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -316,6 +327,7 @@ static inline List *create_list_unsigned_char(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_unsigned_char;
   list->back = &back_unsigned_char;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -331,7 +343,7 @@ static inline signed char back_signed_char(struct __list_signed_char_s *this)
 
 static inline List *create_list_signed_char(signed int n_args, ...)
 {
-  struct __list_signed_char_s *list = malloc(sizeof(struct __list_signed_char_s));
+  struct __list_signed_char_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -351,6 +363,7 @@ static inline List *create_list_signed_char(signed int n_args, ...)
   list->__size = n_args;
   list->front = &front_signed_char;
   list->back = &back_signed_char;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -366,7 +379,7 @@ static inline short int back_short_int(struct __list_short_int_s *this)
 
 static inline List *create_list_short_int(unsigned int n_args, ...)
 {
-  struct __list_short_int_s *list = malloc(sizeof(struct __list_short_int_s));
+  struct __list_short_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -386,6 +399,7 @@ static inline List *create_list_short_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_short_int;
   list->back = &back_short_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -401,7 +415,7 @@ static inline unsigned short int back_unsigned_short_int(struct __list_unsigned_
 
 static inline List *create_list_unsigned_short_int(unsigned int n_args, ...)
 {
-  struct __list_unsigned_short_int_s *list = malloc(sizeof(struct __list_unsigned_short_int_s));
+  struct __list_unsigned_short_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -421,6 +435,7 @@ static inline List *create_list_unsigned_short_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_unsigned_short_int;
   list->back = &back_unsigned_short_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -436,7 +451,7 @@ static inline int back_int(struct __list_int_s *this)
 
 static inline List *create_list_int(unsigned int n_args, ...)
 {
-  struct __list_int_s *list = malloc(sizeof(struct __list_int_s));
+  struct __list_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -456,6 +471,7 @@ static inline List *create_list_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_int;
   list->back = &back_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -471,7 +487,7 @@ static inline long int back_long_int(struct __list_long_int_s *this)
 
 static inline List *create_list_long_int(unsigned int n_args, ...)
 {
-  struct __list_long_int_s *list = malloc(sizeof(struct __list_long_int_s));
+  struct __list_long_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -491,6 +507,7 @@ static inline List *create_list_long_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_long_int;
   list->back = &back_long_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -506,7 +523,7 @@ static inline long long int back_long_long_int(struct __list_long_long_int_s *th
 
 static inline List *create_list_long_long_int(unsigned int n_args, ...)
 {
-  struct __list_long_long_int_s *list = malloc(sizeof(struct __list_long_long_int_s));
+  struct __list_long_long_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -526,6 +543,7 @@ static inline List *create_list_long_long_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_long_long_int;
   list->back = &back_long_long_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -541,7 +559,7 @@ static inline unsigned int back_unsigned_int(struct __list_unsigned_int_s *this)
 
 static inline List *create_list_unsigned_int(unsigned int n_args, ...)
 {
-  struct __list_unsigned_int_s *list = malloc(sizeof(struct __list_unsigned_int_s));
+  struct __list_unsigned_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -561,6 +579,7 @@ static inline List *create_list_unsigned_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_unsigned_int;
   list->back = &back_unsigned_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -576,7 +595,7 @@ static inline unsigned long int back_unsigned_long_int(struct __list_unsigned_lo
 
 static inline List *create_list_unsigned_long_int(unsigned int n_args, ...)
 {
-  struct __list_unsigned_long_int_s *list = malloc(sizeof(struct __list_unsigned_long_int_s));
+  struct __list_unsigned_long_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -596,6 +615,7 @@ static inline List *create_list_unsigned_long_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_unsigned_long_int;
   list->back = &back_unsigned_long_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -611,7 +631,7 @@ static inline unsigned long long int back_unsigned_long_long_int(struct __list_u
 
 static inline List *create_list_unsigned_long_long_int(unsigned int n_args, ...)
 {
-  struct __list_unsigned_long_long_int_s *list = malloc(sizeof(struct __list_unsigned_long_long_int_s));
+  struct __list_unsigned_long_long_int_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -631,6 +651,7 @@ static inline List *create_list_unsigned_long_long_int(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_unsigned_long_long_int;
   list->back = &back_unsigned_long_long_int;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -755,7 +776,7 @@ static inline char *back_char_pointer(struct __list_char_pointer_s *this)
 
 static inline List *create_list_char_pointer(unsigned int n_args, ...)
 {
-  struct __list_char_pointer_s *list = malloc(sizeof(struct __list_char_pointer_s));
+  struct __list_char_pointer_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -775,6 +796,7 @@ static inline List *create_list_char_pointer(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_char_pointer;
   list->back = &back_char_pointer;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -790,7 +812,7 @@ static inline int *back_int_pointer(struct __list_int_pointer_s *this)
 
 static inline List *create_list_int_pointer(unsigned int n_args, ...)
 {
-  struct __list_int_pointer_s *list = malloc(sizeof(struct __list_int_pointer_s));
+  struct __list_int_pointer_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -810,6 +832,7 @@ static inline List *create_list_int_pointer(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_int_pointer;
   list->back = &back_int_pointer;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
@@ -825,7 +848,7 @@ static inline void *back_void_pointer(struct __list_void_pointer_s *this)
 
 static inline List *create_list_void_pointer(unsigned int n_args, ...)
 {
-  struct __list_void_pointer_s *list = malloc(sizeof(struct __list_void_pointer_s));
+  struct __list_void_pointer_s *list = malloc(sizeof(List));
 
   if (!list) return NULL;
 
@@ -845,6 +868,7 @@ static inline List *create_list_void_pointer(unsigned int n_args, ...)
   list->__size = n_args;
   list->front = &front_void_pointer;
   list->back = &back_void_pointer;
+  ((List *)list)->delete = &delete;
   return (List *)list;
 }
 
