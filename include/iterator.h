@@ -10,14 +10,52 @@ typedef struct __iterator_s Iterator;
 
 struct __iterator_s {
     size_t __index;
+    size_t __size;
     void *__data;
     void (*release)(Iterator *);
+    Iterator *(*prev)(Iterator *);
+    Iterator *(*next)(Iterator *);
     void *(*value)(Iterator *);
+};
+
+enum IT_INIT {
+    BEGIN,
+    END
 };
 
 void release(Iterator *this)
 {
     free(this);
+}
+
+Iterator *prev(Iterator *this)
+{
+    if (this->__index == 0) {
+        this->__index = this->__size - 1;
+    } else {
+        this->__index--;
+    }
+    return this;
+}
+
+Iterator *next(Iterator *this)
+{
+    if (this->__index == (this->__size - 1)) {
+        this->__index = 0;
+    } else {
+        this->__index++;
+    }
+    return this;
+}
+
+static inline void init_iterator(Iterator **iterator, struct __container_s *this, enum IT_INIT it_init)
+{
+  (*iterator)->__data = this->__data;
+  (*iterator)->__index = (it_init == BEGIN) ? 0 : this->__size - 1;
+  (*iterator)->__size = this->__size;
+  (*iterator)->release = &release;
+  (*iterator)->prev = &prev;
+  (*iterator)->next = &next;
 }
 
 static inline bool value_bool(Iterator *this)
@@ -31,9 +69,7 @@ static inline Iterator *begin_bool(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_bool);
   return iterator;
 }
@@ -44,9 +80,7 @@ static inline Iterator *end_bool(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_bool);
   return iterator;
 }
@@ -62,9 +96,7 @@ static inline Iterator *begin_char(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_char);
   return iterator;
 }
@@ -75,9 +107,7 @@ static inline Iterator *end_char(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_char);
   return iterator;
 }
@@ -93,9 +123,7 @@ static inline Iterator *begin_unsigned_char(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_char);
   return iterator;
 }
@@ -106,9 +134,7 @@ static inline Iterator *end_unsigned_char(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_char);
   return iterator;
 }
@@ -124,9 +150,7 @@ static inline Iterator *begin_signed_char(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_char);
   return iterator;
 }
@@ -137,9 +161,7 @@ static inline Iterator *end_signed_char(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_signed_char);
   return iterator;
 }
@@ -155,9 +177,7 @@ static inline Iterator *begin_short_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_short_int);
   return iterator;
 }
@@ -168,9 +188,7 @@ static inline Iterator *end_short_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_short_int);
   return iterator;
 }
@@ -186,9 +204,7 @@ static inline Iterator *begin_unsigned_short_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_short_int);
   return iterator;
 }
@@ -199,9 +215,7 @@ static inline Iterator *end_unsigned_short_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_short_int);
   return iterator;
 }
@@ -217,9 +231,7 @@ static inline Iterator *begin_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_int);
   return iterator;
 }
@@ -230,9 +242,7 @@ static inline Iterator *end_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_int);
   return iterator;
 }
@@ -248,9 +258,7 @@ static inline Iterator *begin_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_long_int);
   return iterator;
 }
@@ -261,9 +269,7 @@ static inline Iterator *end_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_long_int);
   return iterator;
 }
@@ -279,9 +285,7 @@ static inline Iterator *begin_long_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_long_long_int);
   return iterator;
 }
@@ -292,9 +296,7 @@ static inline Iterator *end_long_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_long_long_int);
   return iterator;
 }
@@ -310,9 +312,7 @@ static inline Iterator *begin_unsigned_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_int);
   return iterator;
 }
@@ -323,9 +323,7 @@ static inline Iterator *end_unsigned_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_int);
   return iterator;
 }
@@ -341,9 +339,7 @@ static inline Iterator *begin_unsigned_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_long_int);
   return iterator;
 }
@@ -354,9 +350,7 @@ static inline Iterator *end_unsigned_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_long_int);
   return iterator;
 }
@@ -372,9 +366,7 @@ static inline Iterator *begin_unsigned_long_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_long_long_int);
   return iterator;
 }
@@ -385,9 +377,7 @@ static inline Iterator *end_unsigned_long_long_int(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_unsigned_long_long_int);
   return iterator;
 }
@@ -403,9 +393,7 @@ static inline Iterator *begin_char_pointer(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_char_pointer);
   return iterator;
 }
@@ -416,9 +404,7 @@ static inline Iterator *end_char_pointer(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_char_pointer);
   return iterator;
 }
@@ -434,9 +420,7 @@ static inline Iterator *begin_int_pointer(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_int_pointer);
   return iterator;
 }
@@ -447,9 +431,7 @@ static inline Iterator *end_int_pointer(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_int_pointer);
   return iterator;
 }
@@ -465,9 +447,7 @@ static inline Iterator *begin_void_pointer(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = 0;
-  iterator->release = &release;
+  init_iterator(&iterator, this, BEGIN);
   iterator->value = ((void *(*)(Iterator *))value_void_pointer);
   return iterator;
 }
@@ -478,9 +458,7 @@ static inline Iterator *end_void_pointer(struct __container_s *this)
 
   if (!iterator) return NULL;
 
-  iterator->__data = this->__data;
-  iterator->__index = this->__size - 1;
-  iterator->release = &release;
+  init_iterator(&iterator, this, END);
   iterator->value = ((void *(*)(Iterator *))value_void_pointer);
   return iterator;
 }

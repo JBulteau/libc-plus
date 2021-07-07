@@ -19,7 +19,11 @@ int main() {
     list2->empty(list2) ? printf("List is empty\n\n") : printf("List size is %u\n\n", list2->size(list2));
     Iterator *begin_iterator2 = list2->begin(list2);
     Iterator *end_iterator2 = list2->end(list2);
-    printf("(char)\nIterator begin: %c\nIterator end: %c\n\n\n", begin_iterator2->value(begin_iterator2), end_iterator2->value(end_iterator2));
+    printf("(char)\nIterator begin: %c\nIterator end: %c\n\n", begin_iterator2->value(begin_iterator2), end_iterator2->value(end_iterator2));
+    printf("Next -> %c\n", begin_iterator2->next(begin_iterator2)->value(begin_iterator2));
+    printf("Prev -> %c\n", end_iterator2->prev(end_iterator2)->value(end_iterator2));
+    printf("Cycle -> %c\n", begin_iterator2->prev(begin_iterator2)->prev(begin_iterator2)->value(begin_iterator2));
+    printf("Cycle -> %c\n\n\n", end_iterator2->next(end_iterator2)->next(end_iterator2)->value(end_iterator2));
     begin_iterator2->release(begin_iterator2);
     end_iterator2->release(end_iterator2);
     list2->delete(list2);
