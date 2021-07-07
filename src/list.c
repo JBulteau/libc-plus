@@ -50,7 +50,13 @@ int main() {
     list5->empty(list5) ? printf("List is empty\n\n") : printf("List size is %u\n\n", list5->size(list5));
     Iterator *begin_iterator5 = list5->begin(list5);
     Iterator *end_iterator5 = list5->end(list5);
-    printf("(short int)\nIterator begin: %hi\nIterator end: %hi\n\n\n", begin_iterator5->value(begin_iterator5), end_iterator5->value(end_iterator5));
+    printf("(short int)\nIterator begin: %hi\nIterator end: %hi\n\n", begin_iterator5->value(begin_iterator5), end_iterator5->value(end_iterator5));
+    printf("Iterating over list:\n");
+    Iterator *it;
+    FOR_RANGE(it, list5) {
+        printf("- %hi\n", it->value(it));
+    }
+    printf("\n\n");
     begin_iterator5->release(begin_iterator5);
     end_iterator5->release(end_iterator5);
     list5->delete(list5);

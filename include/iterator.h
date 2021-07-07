@@ -23,6 +23,13 @@ enum IT_INIT {
     END
 };
 
+static inline void cleanup_iterator(Iterator **it)
+{
+  free(*it);
+}
+
+#define FOR_RANGE(it, container) Iterator *_ __attribute__((cleanup(cleanup_iterator))) = container->begin(container); for (it = _; it->__index < it->__size; it->__index++)
+
 void release(Iterator *this)
 {
     free(this);
