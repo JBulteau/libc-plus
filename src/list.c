@@ -1,7 +1,10 @@
 #include "list.h"
 
 int main() {
-    List *list = create_list(bool);
+    List *empty = create_list(char *);
+    if (empty->empty(empty) && !empty->front(empty))
+        printf("Empty list, no value\n\n");
+    List *list = create_list(bool, false, true);
     printf("(bool)\nFront: %s\nBack: %s\n", list->front(list) ? "true" : "false", list->back(list) ? "true" : "false");
     list->empty(list) ? printf("List is empty\n\n") : printf("List size is %u\n\n", list->size(list));
     list->delete(list);

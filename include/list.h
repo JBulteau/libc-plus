@@ -237,12 +237,12 @@ static inline int helper(unsigned int n_args, ...)
 
 static inline bool front_bool(struct __list_bool_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : false;
 }
 
 static inline bool back_bool(struct __list_bool_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : false;
 }
 
 static inline List *create_list_bool(unsigned int n_args, ...)
@@ -275,12 +275,12 @@ static inline List *create_list_bool(unsigned int n_args, ...)
 
 static inline char front_char(struct __list_char_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline char back_char(struct __list_char_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_char(unsigned int n_args, ...)
@@ -313,12 +313,12 @@ static inline List *create_list_char(unsigned int n_args, ...)
 
 static inline unsigned char front_unsigned_char(struct __list_unsigned_char_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline unsigned char back_unsigned_char(struct __list_unsigned_char_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_unsigned_char(unsigned int n_args, ...)
@@ -351,12 +351,12 @@ static inline List *create_list_unsigned_char(unsigned int n_args, ...)
 
 static inline signed char front_signed_char(struct __list_signed_char_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline signed char back_signed_char(struct __list_signed_char_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_signed_char(signed int n_args, ...)
@@ -389,12 +389,12 @@ static inline List *create_list_signed_char(signed int n_args, ...)
 
 static inline short int front_short_int(struct __list_short_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline short int back_short_int(struct __list_short_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_short_int(unsigned int n_args, ...)
@@ -427,12 +427,12 @@ static inline List *create_list_short_int(unsigned int n_args, ...)
 
 static inline unsigned short int front_unsigned_short_int(struct __list_unsigned_short_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline unsigned short int back_unsigned_short_int(struct __list_unsigned_short_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_unsigned_short_int(unsigned int n_args, ...)
@@ -465,12 +465,12 @@ static inline List *create_list_unsigned_short_int(unsigned int n_args, ...)
 
 static inline int front_int(struct __list_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline int back_int(struct __list_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_int(unsigned int n_args, ...)
@@ -503,12 +503,12 @@ static inline List *create_list_int(unsigned int n_args, ...)
 
 static inline long int front_long_int(struct __list_long_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline long int back_long_int(struct __list_long_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_long_int(unsigned int n_args, ...)
@@ -541,12 +541,12 @@ static inline List *create_list_long_int(unsigned int n_args, ...)
 
 static inline long long int front_long_long_int(struct __list_long_long_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline long long int back_long_long_int(struct __list_long_long_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_long_long_int(unsigned int n_args, ...)
@@ -579,12 +579,12 @@ static inline List *create_list_long_long_int(unsigned int n_args, ...)
 
 static inline unsigned int front_unsigned_int(struct __list_unsigned_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline unsigned int back_unsigned_int(struct __list_unsigned_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_unsigned_int(unsigned int n_args, ...)
@@ -617,12 +617,12 @@ static inline List *create_list_unsigned_int(unsigned int n_args, ...)
 
 static inline unsigned long int front_unsigned_long_int(struct __list_unsigned_long_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline unsigned long int back_unsigned_long_int(struct __list_unsigned_long_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_unsigned_long_int(unsigned int n_args, ...)
@@ -655,12 +655,12 @@ static inline List *create_list_unsigned_long_int(unsigned int n_args, ...)
 
 static inline unsigned long long int front_unsigned_long_long_int(struct __list_unsigned_long_long_int_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : 0;
 }
 
 static inline unsigned long long int back_unsigned_long_long_int(struct __list_unsigned_long_long_int_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : 0;
 }
 
 static inline List *create_list_unsigned_long_long_int(unsigned int n_args, ...)
@@ -802,12 +802,12 @@ static inline List *create_list_unsigned_long_long_int(unsigned int n_args, ...)
 
 static inline char *front_char_pointer(struct __list_char_pointer_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : NULL;
 }
 
 static inline char *back_char_pointer(struct __list_char_pointer_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : NULL;
 }
 
 static inline List *create_list_char_pointer(unsigned int n_args, ...)
@@ -840,12 +840,12 @@ static inline List *create_list_char_pointer(unsigned int n_args, ...)
 
 static inline int *front_int_pointer(struct __list_int_pointer_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : NULL;
 }
 
 static inline int *back_int_pointer(struct __list_int_pointer_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : NULL;
 }
 
 static inline List *create_list_int_pointer(unsigned int n_args, ...)
@@ -878,12 +878,12 @@ static inline List *create_list_int_pointer(unsigned int n_args, ...)
 
 static inline void *front_void_pointer(struct __list_void_pointer_s *this)
 {
-  return this->__data[0];
+  return this->__size ? this->__data[0] : NULL;
 }
 
 static inline void *back_void_pointer(struct __list_void_pointer_s *this)
 {
-  return this->__data[this->__size - 1];
+  return this->__size ? this->__data[this->__size - 1] : NULL;
 }
 
 static inline List *create_list_void_pointer(unsigned int n_args, ...)
