@@ -32,7 +32,18 @@ static inline void cleanup_iterator(Iterator **it)
   free(*it);
 }
 
-#define FOR_RANGE(it, container) Iterator *_ __attribute__((cleanup(cleanup_iterator))) = container->begin(container); for (it = _; ((struct __internal_iterator_s *)it)->__index < ((struct __internal_iterator_s *)it)->__size; ((struct __internal_iterator_s *)it)->__index++)
+#define __EXPAND_(x) _##x
+
+#define __DECL_(x) __EXPAND_(x)
+
+#define FOR_RANGE(it, container) Iterator *__DECL_(__LINE__) __attribute__((cleanup(cleanup_iterator))) = container->begin(container); for (it = __DECL_(__LINE__); ((struct __internal_iterator_s *)it)->__index < ((struct __internal_iterator_s *)it)->__size; ((struct __internal_iterator_s *)it)->__index++)
+
+#define RANGE(...) __ONE_OR_TWO_ARGS(__VA_ARGS__, 2, 1)
+
+#define __ONE_OR_TWO_ARGS(_0, _1, _2, ...) __ONE_OR_TWO_ARGS_(_2)(_0, _1)
+#define __ONE_OR_TWO_ARGS_(x) __##x##_ARGS
+#define __1_ARGS(x, ...) (Iterator *[]){x, NULL}
+#define __2_ARGS(x, y, ...) (Iterator *[]){x, y}
 
 void release(Iterator *this)
 {
@@ -96,6 +107,38 @@ static inline Iterator *end_bool(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_bool(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((bool *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((bool *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(bool)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(bool));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((bool *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((bool *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(bool)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(bool));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline char value_char(Iterator *this)
 {
   return ((char *)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -121,6 +164,38 @@ static inline Iterator *end_char(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_char);
   return &iterator->__iterator;
+}
+
+Iterator *erase_char(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(char)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(char));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((char *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(char)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(char));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 static inline unsigned char value_unsigned_char(Iterator *this)
@@ -150,6 +225,38 @@ static inline Iterator *end_unsigned_char(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_unsigned_char(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((unsigned char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(unsigned char)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(unsigned char));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((unsigned char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned char *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(unsigned char)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(unsigned char));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline signed char value_signed_char(Iterator *this)
 {
   return ((signed char *)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -175,6 +282,38 @@ static inline Iterator *end_signed_char(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_signed_char);
   return &iterator->__iterator;
+}
+
+Iterator *erase_signed_char(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((signed char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((signed char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(signed char)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(signed char));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((signed char *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((signed char *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(signed char)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(signed char));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 static inline short int value_short_int(Iterator *this)
@@ -204,6 +343,38 @@ static inline Iterator *end_short_int(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_short_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((short int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((short int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(short int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(short int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((short int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((short int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(short int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(short int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline unsigned short int value_unsigned_short_int(Iterator *this)
 {
   return ((unsigned short int *)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -229,6 +400,38 @@ static inline Iterator *end_unsigned_short_int(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_unsigned_short_int);
   return &iterator->__iterator;
+}
+
+Iterator *erase_unsigned_short_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((unsigned short int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned short int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(unsigned short int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(unsigned short int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((unsigned short int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned short int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(unsigned short int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(unsigned short int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 static inline int value_int(Iterator *this)
@@ -258,6 +461,38 @@ static inline Iterator *end_int(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline long int value_long_int(Iterator *this)
 {
   return ((long int *)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -283,6 +518,38 @@ static inline Iterator *end_long_int(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_long_int);
   return &iterator->__iterator;
+}
+
+Iterator *erase_long_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(long int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((long int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(long int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 static inline long long int value_long_long_int(Iterator *this)
@@ -312,6 +579,38 @@ static inline Iterator *end_long_long_int(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_long_long_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((long long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((long long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(long long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(long long int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((long long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((long long int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(long long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(long long int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline unsigned int value_unsigned_int(Iterator *this)
 {
   return ((unsigned int *)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -337,6 +636,38 @@ static inline Iterator *end_unsigned_int(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_unsigned_int);
   return &iterator->__iterator;
+}
+
+Iterator *erase_unsigned_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((unsigned int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(unsigned int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(unsigned int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((unsigned int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(unsigned int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(unsigned int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 static inline unsigned long int value_unsigned_long_int(Iterator *this)
@@ -366,6 +697,38 @@ static inline Iterator *end_unsigned_long_int(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_unsigned_long_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((unsigned long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(unsigned long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(unsigned long int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((unsigned long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned long int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(unsigned long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(unsigned long int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline unsigned long long value_unsigned_long_long_int(Iterator *this)
 {
   return ((unsigned long long int *)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -391,6 +754,38 @@ static inline Iterator *end_unsigned_long_long_int(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_unsigned_long_long_int);
   return &iterator->__iterator;
+}
+
+Iterator *erase_unsigned_long_long_int(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((unsigned long long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned long long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(unsigned long long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(unsigned long long int));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((unsigned long long int *)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((unsigned long long int *)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(unsigned long long int)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(unsigned long long int));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 static inline char *value_char_pointer(Iterator *this)
@@ -420,6 +815,38 @@ static inline Iterator *end_char_pointer(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_char_pointer(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((char **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((char **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(char *)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(char *));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((char **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((char **)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(char *)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(char *));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline int *value_int_pointer(Iterator *this)
 {
   return ((int **)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -447,6 +874,38 @@ static inline Iterator *end_int_pointer(struct __container_s *this)
   return &iterator->__iterator;
 }
 
+Iterator *erase_int_pointer(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((int **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((int **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(int *)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(int *));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((int **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((int **)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(int *)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(int *));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
+}
+
 static inline void *value_void_pointer(Iterator *this)
 {
   return ((void **)((struct __internal_iterator_s *)this)->__data)[((struct __internal_iterator_s *)this)->__index];
@@ -472,6 +931,38 @@ static inline Iterator *end_void_pointer(struct __container_s *this)
   init_iterator(&iterator, this, END);
   iterator->__iterator.value = ((void *(*)(Iterator *))value_void_pointer);
   return &iterator->__iterator;
+}
+
+Iterator *erase_void_pointer(struct __container_s *this, Iterator *iterators[])
+{
+  struct __internal_iterator_s *it = malloc(sizeof(struct __internal_iterator_s));
+
+  if (!it) return NULL;
+
+  if (!iterators[1]) {
+    memmove(
+      &((void **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((void **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[0])->__index + 1) * sizeof(void *)
+    );
+    this->__data = realloc(this->__data, (this->__size - 1) * sizeof(void *));
+    memcpy(it, iterators[0], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size--;
+    this->__size = it->__size;
+  } else {
+    memmove(
+      &((void **)this->__data)[((struct __internal_iterator_s *)iterators[0])->__index],
+      &((void **)this->__data)[((struct __internal_iterator_s *)iterators[1])->__index + 1],
+      (((struct __internal_iterator_s *)iterators[0])->__size - ((struct __internal_iterator_s *)iterators[1])->__index + 1) * sizeof(void *)
+    );
+    this->__data = realloc(this->__data, (this->__size - (((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index)) * sizeof(void *));
+    memcpy(it, iterators[1], sizeof(struct __internal_iterator_s));
+    if (it->__index == this->__size) it->__index--;
+    it->__size -= ((struct __internal_iterator_s *)iterators[1])->__index + 1 - ((struct __internal_iterator_s *)iterators[0])->__index;
+    this->__size = it->__size;
+  }
+  return &it->__iterator;
 }
 
 #endif

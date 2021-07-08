@@ -150,5 +150,30 @@ int main() {
     begin_iterator15->release(begin_iterator15);
     end_iterator15->release(end_iterator15);
     list15->delete(list15);
+    List *list16 = create_list(char, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+    FOR_RANGE(it, list16) {
+        printf("- %c\n", it->value(it));
+    }
+    printf("\n");
+    Iterator *begin = list16->begin(list16);
+    begin = list16->erase(list16, RANGE(begin));
+    FOR_RANGE(it, list16) {
+        printf("- %c\n", it->value(it));
+    }
+    printf("\n");
+    Iterator *end = list16->end(list16);
+    end->prev(end)->prev(end);
+    list16->erase(list16, RANGE(begin, end));
+    FOR_RANGE(it, list16) {
+        printf("- %c\n", it->value(it));
+    }
+    printf("\n");
+    list16->clear(list16);
+    if (list16->empty) {
+        printf("Empty list\n");
+    }
+    begin->release(begin);
+    end->release(end);
+    list16->delete(list16);
     return 0;
 }

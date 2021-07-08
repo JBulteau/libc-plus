@@ -17,8 +17,10 @@ struct __list_s {
   void *(*back)(void *);
   Iterator *(*begin)(void *);
   Iterator *(*end)(void *);
+  Iterator *(*erase)(void *, Iterator *[]);
   bool (*empty)(List *);
   size_t (*size)(List *);
+  void (*clear)(List *);
   void (*delete)(List *);
 };
 
@@ -29,6 +31,7 @@ struct __list_bool_s {
   bool (*back)(struct __list_bool_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_char_s {
@@ -38,6 +41,7 @@ struct __list_char_s {
   char (*back)(struct __list_char_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_unsigned_char_s {
@@ -47,6 +51,7 @@ struct __list_unsigned_char_s {
   unsigned char (*back)(struct __list_unsigned_char_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_signed_char_s {
@@ -56,6 +61,7 @@ struct __list_signed_char_s {
   signed char (*back)(struct __list_signed_char_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_short_int_s {
@@ -65,6 +71,7 @@ struct __list_short_int_s {
   short int (*back)(struct __list_short_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_unsigned_short_int_s {
@@ -74,6 +81,7 @@ struct __list_unsigned_short_int_s {
   unsigned short int (*back)(struct __list_unsigned_short_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_int_s {
@@ -83,6 +91,7 @@ struct __list_int_s {
   int (*back)(struct __list_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_long_int_s {
@@ -92,6 +101,7 @@ struct __list_long_int_s {
   long int (*back)(struct __list_long_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_long_long_int_s {
@@ -101,6 +111,7 @@ struct __list_long_long_int_s {
   long long int (*back)(struct __list_long_long_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_unsigned_int_s {
@@ -110,6 +121,7 @@ struct __list_unsigned_int_s {
   unsigned int (*back)(struct __list_unsigned_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_unsigned_long_int_s {
@@ -119,6 +131,7 @@ struct __list_unsigned_long_int_s {
   unsigned long int (*back)(struct __list_unsigned_long_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_unsigned_long_long_int_s {
@@ -128,6 +141,7 @@ struct __list_unsigned_long_long_int_s {
   unsigned long long int (*back)(struct __list_unsigned_long_long_int_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 /*
@@ -162,6 +176,7 @@ struct __list_char_pointer_s {
   char *(*back)(struct __list_char_pointer_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_int_pointer_s {
@@ -171,6 +186,7 @@ struct __list_int_pointer_s {
   int *(*back)(struct __list_int_pointer_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 struct __list_void_pointer_s {
@@ -180,6 +196,7 @@ struct __list_void_pointer_s {
   void *(*back)(struct __list_void_pointer_s *);
   Iterator *(*begin)(struct __container_s *);
   Iterator *(*end)(struct __container_s *);
+  Iterator *(*erase)(struct __container_s *, Iterator *[]);
 };
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
@@ -244,11 +261,27 @@ static inline size_t size(List *this)
   return this->__size;
 }
 
+static inline void clear(List *this)
+{
+  if (this->__data)
+    free(this->__data);
+  this->__data = NULL;
+  this->__size = 0;
+}
+
 static inline void delete(List *this)
 {
   if (this->__data)
     free(this->__data);
   free(this);
+}
+
+static inline void init_list(List *list)
+{
+  list->empty = &empty;
+  list->size = &size;
+  list->clear = &clear;
+  list->delete = &delete;
 }
 
 static inline int helper(unsigned int n_args, ...)
@@ -305,9 +338,8 @@ static inline List *create_list_bool(unsigned int n_args, ...)
   list->back = &back_bool;
   list->begin = &begin_bool;
   list->end = &end_bool;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_bool;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -347,9 +379,8 @@ static inline List *create_list_char(unsigned int n_args, ...)
   list->back = &back_char;
   list->begin = &begin_char;
   list->end = &end_char;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_char;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -389,9 +420,8 @@ static inline List *create_list_unsigned_char(unsigned int n_args, ...)
   list->back = &back_unsigned_char;
   list->begin = &begin_unsigned_char;
   list->end = &end_unsigned_char;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_unsigned_char;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -431,9 +461,8 @@ static inline List *create_list_signed_char(signed int n_args, ...)
   list->back = &back_signed_char;
   list->begin = &begin_signed_char;
   list->end = &end_signed_char;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_signed_char;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -473,9 +502,8 @@ static inline List *create_list_short_int(unsigned int n_args, ...)
   list->back = &back_short_int;
   list->begin = &begin_short_int;
   list->end = &end_short_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_short_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -515,9 +543,8 @@ static inline List *create_list_unsigned_short_int(unsigned int n_args, ...)
   list->back = &back_unsigned_short_int;
   list->begin = &begin_unsigned_short_int;
   list->end = &end_unsigned_short_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_unsigned_short_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -557,9 +584,8 @@ static inline List *create_list_int(unsigned int n_args, ...)
   list->back = &back_int;
   list->begin = &begin_int;
   list->end = &end_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -599,9 +625,8 @@ static inline List *create_list_long_int(unsigned int n_args, ...)
   list->back = &back_long_int;
   list->begin = &begin_long_int;
   list->end = &end_long_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_long_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -641,9 +666,8 @@ static inline List *create_list_long_long_int(unsigned int n_args, ...)
   list->back = &back_long_long_int;
   list->begin = &begin_long_long_int;
   list->end = &end_long_long_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_long_long_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -683,9 +707,8 @@ static inline List *create_list_unsigned_int(unsigned int n_args, ...)
   list->back = &back_unsigned_int;
   list->begin = &begin_unsigned_int;
   list->end = &end_unsigned_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_unsigned_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -725,9 +748,8 @@ static inline List *create_list_unsigned_long_int(unsigned int n_args, ...)
   list->back = &back_unsigned_long_int;
   list->begin = &begin_unsigned_long_int;
   list->end = &end_unsigned_long_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_unsigned_long_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -767,9 +789,8 @@ static inline List *create_list_unsigned_long_long_int(unsigned int n_args, ...)
   list->back = &back_unsigned_long_long_int;
   list->begin = &begin_unsigned_long_long_int;
   list->end = &end_unsigned_long_long_int;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_unsigned_long_long_int;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -918,9 +939,8 @@ static inline List *create_list_char_pointer(unsigned int n_args, ...)
   list->back = &back_char_pointer;
   list->begin = &begin_char_pointer;
   list->end = &end_char_pointer;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_char_pointer;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -960,9 +980,8 @@ static inline List *create_list_int_pointer(unsigned int n_args, ...)
   list->back = &back_int_pointer;
   list->begin = &begin_int_pointer;
   list->end = &end_int_pointer;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_int_pointer;
+  init_list((List *)list);
   return (List *)list;
 }
 
@@ -1002,9 +1021,8 @@ static inline List *create_list_void_pointer(unsigned int n_args, ...)
   list->back = &back_void_pointer;
   list->begin = &begin_void_pointer;
   list->end = &end_void_pointer;
-  ((List *)list)->empty = &empty;
-  ((List *)list)->size = &size;
-  ((List *)list)->delete = &delete;
+  list->erase = &erase_void_pointer;
+  init_list((List *)list);
   return (List *)list;
 }
 
