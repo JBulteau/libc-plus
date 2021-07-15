@@ -10,7 +10,13 @@ int main() {
     list->empty(list) ? printf("List is empty\n\n") : printf("List size is %u\n\n", list->size(list));
     Iterator *begin_iterator = list->begin(list);
     Iterator *end_iterator = list->end(list);
-    printf("(bool)\nIterator begin: %s\nIterator end: %s\n\n\n", begin_iterator->value(begin_iterator) ? "true" : "false", end_iterator->value(end_iterator) ? "true" : "false");
+    printf("(bool)\nIterator begin: %s\nIterator end: %s\n\n", begin_iterator->value(begin_iterator) ? "true" : "false", end_iterator->value(end_iterator) ? "true" : "false");
+    Iterator *to_insert = list->begin(list);
+    list->insert(list, to_insert, true);
+    FOR_RANGE(to_insert, list) {
+        printf(" - %s\n", to_insert->value(to_insert) ? "true" : "false");
+    }
+    printf("\n\n");
     begin_iterator->release(begin_iterator);
     end_iterator->release(end_iterator);
     list->delete(list);
