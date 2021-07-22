@@ -13,10 +13,12 @@ int main() {
     printf("(bool)\nIterator begin: %s\nIterator end: %s\n\n", begin_iterator->value(begin_iterator) ? "true" : "false", end_iterator->value(end_iterator) ? "true" : "false");
     Iterator *to_insert = list->begin(list);
     list->insert(list, to_insert, true);
-    FOR_RANGE(to_insert, list) {
-        printf(" - %s\n", to_insert->value(to_insert) ? "true" : "false");
+    Iterator *it;
+    FOR_RANGE(it, list) {
+        printf(" - %s\n", it->value(it) ? "true" : "false");
     }
     printf("\n\n");
+    to_insert->release(to_insert);
     begin_iterator->release(begin_iterator);
     end_iterator->release(end_iterator);
     list->delete(list);
@@ -58,7 +60,6 @@ int main() {
     Iterator *end_iterator5 = list5->end(list5);
     printf("(short int)\nIterator begin: %hi\nIterator end: %hi\n\n", begin_iterator5->value(begin_iterator5), end_iterator5->value(end_iterator5));
     printf("Iterating over list:\n");
-    Iterator *it;
     FOR_RANGE(it, list5) {
         printf("- %hi\n", it->value(it));
     }
@@ -162,14 +163,15 @@ int main() {
     }
     printf("\n");
     Iterator *begin = list16->begin(list16);
-    begin = list16->erase(list16, RANGE(begin));
+    Iterator *new;
+    new = list16->erase(list16, RANGE(begin));
     FOR_RANGE(it, list16) {
         printf("- %c\n", it->value(it));
     }
     printf("\n");
     Iterator *end = list16->end(list16);
     end->prev(end)->prev(end);
-    list16->erase(list16, RANGE(begin, end));
+    list16->erase(list16, RANGE(new, end));
     FOR_RANGE(it, list16) {
         printf("- %c\n", it->value(it));
     }
@@ -178,6 +180,7 @@ int main() {
     if (list16->empty) {
         printf("Empty list\n");
     }
+    new->release(new);
     begin->release(begin);
     end->release(end);
     list16->delete(list16);
