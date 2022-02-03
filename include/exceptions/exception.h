@@ -6,23 +6,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "exception_definition.h"
 
 jmp_buf buffer;
 jmp_buf __old_buffer;
 int __error;
 
-#define __EXCEPTIONS E(OtherException)
-#define E(e) e,
+#define RegisterException(e) e,
 
 typedef enum __exception_types {
     Exception = 1,
-    __EXCEPTIONS TOP
+    RegisteredException
+    TOP
 } __exception_types_e;
 
-#undef E
-#define E(e) #e,
+#undef RegisterException
+#define RegisterException(e) #e,
 
-const char *__exception_names[] = { "Exception", __EXCEPTIONS };
+const char *__exception_names[] = { "Exception", RegisteredException };
 
 typedef struct __exception_s {
     __exception_types_e type;
@@ -31,9 +32,6 @@ typedef struct __exception_s {
     int line;
     char *what;
 } exception_t;
-
-#define Exception(what) __func__, __FILE__, __LINE__, what, Exception
-#define OtherException(what) __func__, __FILE__, __LINE__, what, OtherException
 
 exception_t __exception;
 
@@ -48,7 +46,9 @@ exception_t __exception;
         longjmp(buffer, __error); \
     } else
 
-static inline void throw(const char *function, const char *file, int line, const char *what, __exception_types_e exception_type)
+#define throw(exception, what) __throw(__func__, __FILE__, __LINE__, what, exception)
+
+static inline void __throw(const char *function, const char *file, int line, const char *what, __exception_types_e exception_type)
 {
     __exception.function = strdup(function);
     __exception.file = strdup(file);

@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include "exception.h"
 
+// RegisterExceptions()
+
 void bar()
 {
-    throw(OtherException("Ooops, il y a eu une erreur"));
+    throw(TestException, "Ooops, il y a eu une erreur");
     puts("Bar");
 }
 
 void foo()
 {
-    throw(Exception("Ooops, il y a eu une erreur"));
+    throw(Exception, "Ooops, il y a eu une erreur");
     puts("Foo");
 }
 
