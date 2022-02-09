@@ -46,9 +46,9 @@ __internal_exception_t __internal_exception;
 #define catch(exception) \
     buffer[0] = __old_buffer[0]; \
     exception->what = __internal_exception.what; \
-    if (exception->__error__ != __error) { \
+    if (exception->__error__ != __error && __error != 0) { \
         longjmp(buffer, __error); \
-    } else
+    } else if (__error != 0)
 
 #define throw(exception, what) __throw(__func__, __FILE__, __LINE__, what, exception)
 
