@@ -5,6 +5,7 @@ RegisterException(OtherException)
 
 void bar()
 {
+    // throw(OtherException, "test");
     puts("Bar");
 }
 
@@ -19,13 +20,14 @@ int main(int argc, char **argv)
     try {
         foo();
     } catch (Exception) {
+        puts(Exception->what);
         puts("Exception catched, continuing...");
     }
     puts("After first try catch");
     try {
         bar();
     } catch (Exception) {
-        puts("Exception catched, continuing...");
+        puts("Exception 2 catched, continuing...");
     }
 
     throw(OtherException, "Toto");

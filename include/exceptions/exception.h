@@ -45,6 +45,7 @@ __internal_exception_t __internal_exception;
 
 #define catch(exception) \
     buffer[0] = __old_buffer[0]; \
+    exception->what = __internal_exception.what; \
     if (exception->__error__ != __error) { \
         longjmp(buffer, __error); \
     } else
@@ -53,6 +54,10 @@ __internal_exception_t __internal_exception;
 
 static inline void __throw(const char *function, const char *file, int line, const char *what, ExceptionClass *exception)
 {
+    free(__internal_exception.name);
+    free(__internal_exception.function);
+    free(__internal_exception.file);
+    free(__internal_exception.what);
     __internal_exception.name = strdup(exception->__name__);
     __internal_exception.function = strdup(function);
     __internal_exception.file = strdup(file);
@@ -72,6 +77,14 @@ void __attribute__((constructor)) init()
         dprintf(2, "Exception %s thrown in function '%s' (%s at line %i): \"%s\"\n", __internal_exception.name, __internal_exception.function, __internal_exception.file, __internal_exception.line, __internal_exception.what);
         exit(error);
     }
+}
+
+void __attribute((destructor)) dispose()
+{
+    free(__internal_exception.name);
+    free(__internal_exception.function);
+    free(__internal_exception.file);
+    free(__internal_exception.what);
 }
 
 #endif
