@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include "exception.h"
 
-// RegisterExceptions()
+RegisterException(OtherException)
 
 void bar()
 {
-    throw(TestException, "Ooops, il y a eu une erreur");
     puts("Bar");
 }
 
@@ -17,7 +16,6 @@ void foo()
 
 int main(int argc, char **argv)
 {
-    // RegisterException(OtherException);
     try {
         foo();
     } catch (Exception) {
@@ -29,6 +27,8 @@ int main(int argc, char **argv)
     } catch (Exception) {
         puts("Exception catched, continuing...");
     }
+
+    throw(OtherException, "Toto");
     puts("After second try catch");
     return 0;
 }
