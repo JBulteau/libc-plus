@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <execinfo.h>
+#include <ctype.h>
 #include "utils.h"
 
 jmp_buf     __buffer;
@@ -20,11 +22,17 @@ typedef struct {
 } ExceptionClass;
 
 typedef struct {
-    char    *name;
-    char    *function;
-    char    *file;
-    int     line;
-    char    *what;
+    int depth;
+    char **stacktrace;
+} __stacktrace_t;
+
+typedef struct {
+    char                *name;
+    char                *function;
+    char                *file;
+    int                 line;
+    char                *what;
+    __stacktrace_t      stacktrace;
 } __internal_exception_t;
 
 __internal_exception_t __internal_exception;
@@ -51,17 +59,54 @@ __internal_exception_t __internal_exception;
 
 #define throw(exception, what) __throw(__func__, __FILE__, __LINE__, what, exception)
 
-static inline void __throw(const char *function, const char *file, int line, const char *what, ExceptionClass *exception)
+static char **__parse_stacktrace(__stacktrace_t *stacktrace, char **symbols)
+{
+    char *ptr;
+    int k = 0;
+
+    stacktrace->stacktrace = malloc(sizeof(char *) * 2);
+    for (int i = 0; i < stacktrace->depth; i++) {
+        for (int j = 0; symbols[i][j]; j++) {
+            if (symbols[i][j] == '(' && isalpha(symbols[i][j + 1])) {
+                strtok_r(symbols[i], "(", &ptr);
+                stacktrace->stacktrace[k] = strdup(strtok_r(NULL, "+", &ptr));
+                k++;
+                stacktrace->stacktrace = realloc(stacktrace->stacktrace, sizeof(char *) * (k + 2));
+            } else if (symbols[i][j] == '(' && !isalpha(symbols[i][j + 1])) {
+                continue;
+            }
+        }
+    }
+    stacktrace->stacktrace[k] = NULL;
+    stacktrace->depth = k;
+}
+
+static void __get_stacktrace(__stacktrace_t *stacktrace)
+{
+    void *buffer[1024];
+    stacktrace->depth = backtrace(buffer, 1024);
+    char **symbols = backtrace_symbols(buffer, stacktrace->depth);
+    __parse_stacktrace(stacktrace, symbols);
+    free(symbols);
+}
+
+static void __throw(const char *function, const char *file, int line, const char *what, ExceptionClass *exception)
 {
     free(__internal_exception.name);
     free(__internal_exception.function);
     free(__internal_exception.file);
     free(__internal_exception.what);
+    for (int i = 0; __internal_exception.stacktrace.stacktrace && i < __internal_exception.stacktrace.depth; i++)
+        free(__internal_exception.stacktrace.stacktrace[i]);
+    free(__internal_exception.stacktrace.stacktrace);
+    __stacktrace_t stacktrace;
+    __get_stacktrace(&stacktrace);
     __internal_exception.name = strdup(exception->__name);
     __internal_exception.function = strdup(function);
     __internal_exception.file = strdup(file);
     __internal_exception.line = line;
     __internal_exception.what = strdup(what);
+    __internal_exception.stacktrace = stacktrace;
     longjmp(__buffer, exception->__error);
 }
 
@@ -74,6 +119,10 @@ void __attribute__((constructor)) init()
 
     if (error != 0) {
         dprintf(2, "Exception %s thrown in function '%s' (%s at line %i): \"%s\"\n", __internal_exception.name, __internal_exception.function, __internal_exception.file, __internal_exception.line, __internal_exception.what);
+        if (__internal_exception.stacktrace.depth > 0) {
+            for (int i = 1; i < __internal_exception.stacktrace.depth; i++)
+                dprintf(2, "\tat %s\n", __internal_exception.stacktrace.stacktrace[i]);
+        }
         exit(error);
     }
 }
@@ -84,6 +133,9 @@ void __attribute((destructor)) dispose()
     free(__internal_exception.function);
     free(__internal_exception.file);
     free(__internal_exception.what);
+    for (int i = 0; __internal_exception.stacktrace.stacktrace && i < __internal_exception.stacktrace.depth; i++)
+        free(__internal_exception.stacktrace.stacktrace[i]);
+    free(__internal_exception.stacktrace.stacktrace);
 }
 
 #endif
