@@ -1,8 +1,8 @@
-#ifndef _UTILS_H__
-#define _UTILS_H__
+#ifndef __UTILS_H
+#define __UTILS_H
 
-#define __EXPAND_(x) _##x
+#define __EXPAND(x) _##x
 
-#define __DECL_(x) __EXPAND_(x)
+#define __DECL(x) __EXPAND(x)
 
 #endif
