@@ -1,6 +1,8 @@
 #ifndef _ITERATOR_H__
 #define _ITERATOR_H__
 
+#include "utils.h"
+
 struct __container_s {
   size_t __size;
   void *__data;
@@ -31,10 +33,6 @@ static inline void cleanup_iterator(Iterator **it)
 {
   free(*it);
 }
-
-#define __EXPAND_(x) _##x
-
-#define __DECL_(x) __EXPAND_(x)
 
 #define FOR_RANGE(it, container) Iterator *__DECL_(__LINE__) __attribute__((cleanup(cleanup_iterator))) = container->begin(container); for (it = __DECL_(__LINE__); ((struct __internal_iterator_s *)it)->__index < ((struct __internal_iterator_s *)it)->__size; ((struct __internal_iterator_s *)it)->__index++)
 
